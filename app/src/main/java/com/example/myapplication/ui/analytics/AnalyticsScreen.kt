@@ -77,6 +77,10 @@ fun AnalyticsScreen(
     mainVm: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
+    var timeRange by remember { mutableStateOf(0) }
+    var granularity by remember { mutableStateOf(0) }
+    var geoView by remember { mutableStateOf(0) }
+
     val link = mainVm.selectedLink
 
     if (link == null) {
@@ -88,10 +92,6 @@ fun AnalyticsScreen(
         }
         return
     }
-
-    var timeRange by remember { mutableStateOf(0) }
-    var granularity by remember { mutableStateOf(0) }
-    var geoView by remember { mutableStateOf(0) }
 
     val stats = when (timeRange) { 0 -> MOCK_STATS_7D; 1 -> MOCK_STATS_30D; 2 -> MOCK_STATS_90D; else -> MOCK_STATS_ALL }
     val lineData = when (timeRange) { 0 -> MOCK_LINE_7D; 1 -> MOCK_LINE_30D; 2 -> MOCK_LINE_90D; else -> MOCK_LINE_ALL }
