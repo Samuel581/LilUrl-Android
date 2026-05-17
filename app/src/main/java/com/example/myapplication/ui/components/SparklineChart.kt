@@ -3,13 +3,17 @@ package com.example.myapplication.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
 fun SparklineChart(
@@ -68,5 +72,15 @@ fun SparklineChart(
             color = primary,
             style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round),
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SparklineChartPreview(
+    @PreviewParameter(SparklineChartData::class) data: List<Float>,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        SparklineChart(data, Modifier.height(64.dp))
     }
 }

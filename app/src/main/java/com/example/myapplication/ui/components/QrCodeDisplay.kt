@@ -14,10 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.ui.theme.LilUrlTheme
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -25,12 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun QrCodeDisplay(
-    url: String,
-    modifier: Modifier = Modifier,
-    size: Dp = 96.dp,
-) {
-    val qrBitmap: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, key1 = url) {
+fun rememberQrBitmap(url: String): ImageBitmap? {
+    val bitmap by produceState<ImageBitmap?>(initialValue = null, key1 = url) {
         value = withContext(Dispatchers.Default) {
             val matrix = runCatching {
                 QRCodeWriter().encode(
@@ -49,7 +48,15 @@ fun QrCodeDisplay(
                 .asImageBitmap()
         }
     }
+    return bitmap
+}
 
+@Composable
+fun QrCodeDisplay(
+    bitmap: ImageBitmap?,
+    modifier: Modifier = Modifier,
+    size: Dp = 96.dp,
+) {
     val bgColor = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(
@@ -59,11 +66,22 @@ fun QrCodeDisplay(
             .background(bgColor)
             .padding(4.dp),
     ) {
-        val bmp = qrBitmap ?: return@Canvas
+        val bmp = bitmap ?: return@Canvas
         drawImage(
             image = bmp,
             dstOffset = IntOffset.Zero,
             dstSize = IntSize(this.size.width.toInt(), this.size.height.toInt()),
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun QrCodeDisplayPreview(
+    @PreviewParameter(QrBitmapState::class) url: String?,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        val bitmap = url?.let { rememberQrBitmap(it) }
+        QrCodeDisplay(bitmap)
     }
 }

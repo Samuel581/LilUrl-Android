@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
 fun PasswordTextField(
@@ -50,4 +53,21 @@ fun PasswordTextField(
         onImeAction = onImeAction,
         enabled = enabled,
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PasswordTextFieldPreview(
+    @PreviewParameter(PasswordFieldParams::class) config: PasswordFieldPreviewConfig,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        var value by remember { mutableStateOf(config.value) }
+        PasswordTextField(
+            value = value,
+            onValueChange = { value = it },
+            label = config.label,
+            errorMessage = config.error,
+            enabled = config.enabled,
+        )
+    }
 }

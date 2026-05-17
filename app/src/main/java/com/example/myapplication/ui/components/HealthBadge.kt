@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.HealthGreenContainer
 import com.example.myapplication.ui.theme.HealthGreenContainerDark
@@ -18,6 +20,7 @@ import com.example.myapplication.ui.theme.HealthRedContainer
 import com.example.myapplication.ui.theme.HealthRedContainerDark
 import com.example.myapplication.ui.theme.HealthRedOnContainer
 import com.example.myapplication.ui.theme.HealthRedOnContainerDark
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 /** status = -1 means unknown (not yet checked by backend). Renders a neutral "—" badge. */
 @Composable
@@ -54,5 +57,15 @@ fun HealthBadge(status: Int, modifier: Modifier = Modifier) {
             color = fg,
             fontWeight = FontWeight.Medium,
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HealthBadgePreview(
+    @PreviewParameter(HealthStatus::class) status: Int,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        HealthBadge(status)
     }
 }

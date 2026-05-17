@@ -13,8 +13,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
 fun LineChart(
@@ -84,5 +87,15 @@ fun LineChart(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LineChartPreview(
+    @PreviewParameter(LineChartData::class) params: Pair<List<Float>, List<String>>,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        LineChart(params.first, params.second, Modifier.fillMaxWidth())
     }
 }

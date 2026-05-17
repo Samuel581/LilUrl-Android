@@ -17,8 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 private val DAY_LABELS = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 private val HOUR_TICKS = mapOf(0 to "12am", 6 to "6am", 12 to "12pm", 18 to "6pm", 23 to "12am")
@@ -99,5 +102,15 @@ fun HeatmapGrid(
             }
             Text("High", style = MaterialTheme.typography.labelSmall, color = labelColor, fontSize = 10.sp)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HeatmapGridPreview(
+    @PreviewParameter(HeatmapGridData::class) data: List<List<Float>>,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        HeatmapGrid(data, Modifier.fillMaxWidth())
     }
 }

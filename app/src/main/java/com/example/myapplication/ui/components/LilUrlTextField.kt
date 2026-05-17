@@ -7,11 +7,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
 fun LilUrlTextField(
@@ -51,4 +58,21 @@ fun LilUrlTextField(
         readOnly = readOnly,
         singleLine = singleLine,
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LilUrlTextFieldPreview(
+    @PreviewParameter(TextFieldParams::class) config: TextFieldPreviewConfig,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        var value by remember { mutableStateOf(config.value) }
+        LilUrlTextField(
+            value = value,
+            onValueChange = { value = it },
+            label = config.label,
+            errorMessage = config.error,
+            enabled = config.enabled,
+        )
+    }
 }

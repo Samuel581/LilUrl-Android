@@ -16,8 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.ui.theme.LilUrlTheme
 import com.example.myapplication.ui.theme.WipContainer
 import com.example.myapplication.ui.theme.WipContainerDark
 import com.example.myapplication.ui.theme.WipOnContainer
@@ -56,5 +59,15 @@ fun WipBanner(
                 lineHeight = 16.sp,
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WipBannerPreview(
+    @PreviewParameter(WipLabels::class) label: String,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        WipBanner(label)
     }
 }

@@ -17,8 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.data.mock.tagColor
+import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
 fun TagChip(
@@ -55,5 +58,19 @@ fun TagChip(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TagChipPreview(
+    @PreviewParameter(TagChipParams::class) params: Triple<String, Color, Boolean>,
+) {
+    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+        TagChip(
+            tag = params.first,
+            color = if (params.second == Color.Unspecified) tagColor(params.first) else params.second,
+            removable = params.third,
+        )
     }
 }
