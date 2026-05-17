@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
@@ -11,13 +12,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
-import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,9 +30,9 @@ fun QrCodeDisplay(
     modifier: Modifier = Modifier,
     size: Dp = 96.dp,
 ) {
-    val matrix: BitMatrix? by produceState<BitMatrix?>(initialValue = null, key1 = url) {
+    val qrBitmap: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, key1 = url) {
         value = withContext(Dispatchers.Default) {
-            runCatching {
+            val matrix = runCatching {
                 QRCodeWriter().encode(
                     url,
                     BarcodeFormat.QR_CODE,
@@ -38,11 +40,16 @@ fun QrCodeDisplay(
                     512,
                     mapOf(EncodeHintType.MARGIN to 0),
                 )
-            }.getOrNull()
+            }.getOrNull() ?: return@withContext null
+
+            val pixels = IntArray(matrix.width * matrix.height) { i ->
+                if (matrix[i % matrix.width, i / matrix.width]) android.graphics.Color.BLACK else 0
+            }
+            Bitmap.createBitmap(pixels, matrix.width, matrix.height, Bitmap.Config.ARGB_8888)
+                .asImageBitmap()
         }
     }
 
-    val cellColor = MaterialTheme.colorScheme.onSurface
     val bgColor = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(
@@ -52,19 +59,11 @@ fun QrCodeDisplay(
             .background(bgColor)
             .padding(4.dp),
     ) {
-        val m = matrix ?: return@Canvas
-        val cellW = this.size.width / m.width
-        val cellH = this.size.height / m.height
-        for (y in 0 until m.height) {
-            for (x in 0 until m.width) {
-                if (m[x, y]) {
-                    drawRect(
-                        color = cellColor,
-                        topLeft = Offset(x * cellW, y * cellH),
-                        size = Size(cellW, cellH),
-                    )
-                }
-            }
-        }
+        val bmp = qrBitmap ?: return@Canvas
+        drawImage(
+            image = bmp,
+            dstOffset = IntOffset.Zero,
+            dstSize = IntSize(this.size.width.toInt(), this.size.height.toInt()),
+        )
     }
 }
