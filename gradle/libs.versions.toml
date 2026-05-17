@@ -17,6 +17,8 @@ okhttp = "4.12.0"
 gson = "2.10.1"
 securityCrypto = "1.1.0-alpha06"
 coroutines = "1.7.3"
+coil = "2.7.0"
+zxing = "3.5.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +51,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

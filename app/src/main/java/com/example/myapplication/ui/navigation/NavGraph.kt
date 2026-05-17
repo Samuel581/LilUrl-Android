@@ -1,45 +1,28 @@
 package com.example.myapplication.ui.navigation
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.compose.ui.platform.LocalContext
 import com.example.myapplication.LilUrlApp
 import com.example.myapplication.ui.auth.LoginScreen
 import com.example.myapplication.ui.auth.RegisterScreen
-import com.example.myapplication.ui.home.HomeScreen
-import com.example.myapplication.ui.links.LinksScreen
-import com.example.myapplication.ui.result.ResultScreen
-import androidx.compose.ui.platform.LocalContext
+import com.example.myapplication.ui.main.MainScreen
 
 object Routes {
     const val LOGIN = "login"
     const val REGISTER = "register"
-    const val HOME = "home"
-    const val LINKS = "links"
-    const val RESULT = "result/{shortUrl}/{shortCode}/{originalUrl}?expiresAt={expiresAt}"
-
-    fun resultRoute(
-        shortUrl: String,
-        shortCode: String,
-        originalUrl: String,
-        expiresAt: String?,
-    ): String {
-        val base = "result/${Uri.encode(shortUrl)}/${Uri.encode(shortCode)}/${Uri.encode(originalUrl)}"
-        return if (expiresAt != null) "$base?expiresAt=${Uri.encode(expiresAt)}" else base
-    }
+    const val MAIN = "main"
 }
 
 @Composable
 fun AppNavGraph(navController: NavHostController = rememberNavController()) {
     val app = LocalContext.current.applicationContext as LilUrlApp
-    val start = if (app.authStorage.isLoggedIn()) Routes.HOME else Routes.LOGIN
+    val start = if (app.authStorage.isLoggedIn()) Routes.MAIN else Routes.LOGIN
 
     NavHost(navController = navController, startDestination = start) {
 
@@ -51,7 +34,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
                 successMessage = successMessage,
                 onMessageShown = { backStackEntry.savedStateHandle.remove<String>("successMessage") },
                 onLoginSuccess = {
-                    navController.navigate(Routes.HOME) {
+                    navController.navigate(Routes.MAIN) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
@@ -70,56 +53,12 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        composable(Routes.HOME) {
-            HomeScreen(
-                onShortenSuccess = { shortUrl, shortCode, originalUrl, expiresAt ->
-                    navController.navigate(Routes.resultRoute(shortUrl, shortCode, originalUrl, expiresAt))
-                },
-                onNavigateToLinks = { navController.navigate(Routes.LINKS) },
+        composable(Routes.MAIN) {
+            MainScreen(
                 onLogout = {
                     navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.HOME) { inclusive = true }
+                        popUpTo(Routes.MAIN) { inclusive = true }
                     }
-                },
-                onSessionExpired = {
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.HOME) { inclusive = true }
-                    }
-                },
-            )
-        }
-
-        composable(Routes.LINKS) {
-            LinksScreen(
-                onNavigateBack = { navController.popBackStack() },
-                onSessionExpired = {
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.HOME) { inclusive = true }
-                    }
-                },
-            )
-        }
-
-        composable(
-            route = Routes.RESULT,
-            arguments = listOf(
-                navArgument("shortUrl") { type = NavType.StringType },
-                navArgument("shortCode") { type = NavType.StringType },
-                navArgument("originalUrl") { type = NavType.StringType },
-                navArgument("expiresAt") {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                },
-            ),
-        ) { entry ->
-            ResultScreen(
-                shortUrl = Uri.decode(entry.arguments?.getString("shortUrl").orEmpty()),
-                shortCode = Uri.decode(entry.arguments?.getString("shortCode").orEmpty()),
-                originalUrl = Uri.decode(entry.arguments?.getString("originalUrl").orEmpty()),
-                expiresAt = entry.arguments?.getString("expiresAt")?.let { Uri.decode(it) },
-                onShortenAnother = {
-                    navController.popBackStack(Routes.HOME, inclusive = false)
                 },
             )
         }

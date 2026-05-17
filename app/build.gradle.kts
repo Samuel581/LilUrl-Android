@@ -64,6 +64,10 @@ dependencies {
     implementation(libs.security.crypto)
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    // Image loading
+    implementation(libs.coil.compose)
+    // QR code generation
+    implementation(libs.zxing.core)
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
