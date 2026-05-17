@@ -128,11 +128,15 @@ fun AnalyticsScreen(
 
         // Four stat cards
         item {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StatCard("Clicks", stats[0], Icons.Rounded.TouchApp, Modifier.weight(1f))
-                StatCard("Visitors", stats[1], Icons.Rounded.PhoneAndroid, Modifier.weight(1f))
-                StatCard("Countries", stats[2], Icons.Rounded.Public, Modifier.weight(1f))
-                StatCard("Peak time", stats.getOrElse(3) { "—" }, Icons.Rounded.Schedule, Modifier.weight(1f))
+            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    StatCard("Clicks", stats[0], Icons.Rounded.TouchApp, Modifier.weight(1f))
+                    StatCard("Visitors", stats[1], Icons.Rounded.PhoneAndroid, Modifier.weight(1f))
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    StatCard("Countries", stats[2], Icons.Rounded.Public, Modifier.weight(1f))
+                    StatCard("Peak time", stats.getOrElse(3) { "—" }, Icons.Rounded.Schedule, Modifier.weight(1f))
+                }
             }
         }
 
