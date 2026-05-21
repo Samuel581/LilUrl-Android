@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -77,11 +76,9 @@ fun QrCodeDisplay(
 
 @Preview(showBackground = true)
 @Composable
-private fun QrCodeDisplayPreview(
-    @PreviewParameter(QrBitmapState::class) url: String?,
-) {
+private fun QrCodeDisplayPreview() {
     LilUrlTheme(darkTheme = false, dynamicColor = false) {
-        val bitmap = url?.let { rememberQrBitmap(it) }
+        val bitmap = rememberQrBitmap("https://smol.link/example")
         QrCodeDisplay(bitmap)
     }
 }

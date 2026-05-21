@@ -1,22 +1,13 @@
 package com.example.myapplication.ui.linkdetail
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,360 +17,358 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Link
-import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material.icons.rounded.Public
-import androidx.compose.material.icons.rounded.QrCode
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.QrCode2
 import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material.icons.rounded.ShowChart
-import androidx.compose.material.icons.rounded.TouchApp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
-import com.example.myapplication.data.mock.MOCK_DAYS_LABELS
-import com.example.myapplication.data.mock.MOCK_SPARKLINE_7D
 import com.example.myapplication.data.mock.MockLink
-import com.example.myapplication.ui.components.HealthBadge
 import com.example.myapplication.ui.components.QrCodeDisplay
-import com.example.myapplication.ui.components.SparklineChart
-import com.example.myapplication.ui.components.StatCard
-import com.example.myapplication.ui.components.TagChip
-import com.example.myapplication.ui.components.WipBanner
 import com.example.myapplication.ui.components.rememberQrBitmap
-import com.example.myapplication.ui.main.MainViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LinkDetailScreen(
-    mainVm: MainViewModel,
-    modifier: Modifier = Modifier,
-) {
-    val link = mainVm.selectedLink
-
-    if (link == null) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Rounded.Link, null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.outlineVariant)
-                Text("Select a link to view details", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-        return
-    }
-
-    val qrBitmap = rememberQrBitmap(link.shortUrl)
-    val snackbar = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item { DetailCard(link = link, qrBitmap = qrBitmap) }
-            item {
-                ActionButtons(
-                    link = link,
-                    qrBitmap = qrBitmap,
-                    onEdit = { mainVm.openSettings() },
-                    onMessage = { msg -> scope.launch { snackbar.showSnackbar(msg) } },
-                )
-            }
-
-            item {
-                WipBanner("Click stats, visitor counts and geographic data are not connected to the backend yet.")
-            }
-            item { StatsRow() }
-            item { SparklineCard(onFullAnalytics = { mainVm.openAnalytics() }) }
-        }
-
-        SnackbarHost(
-            hostState = snackbar,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun DetailCard(link: MockLink, qrBitmap: ImageBitmap?) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(0.dp),
-    ) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            QrCodeDisplay(bitmap = qrBitmap, size = 88.dp, modifier = Modifier.align(Alignment.TopEnd))
-
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(end = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = link.shortUrl,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    HealthBadge(link.healthStatus)
-                }
-
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    link.tags.forEach { TagChip(tag = it) }
-                    DomainChipSmall(link.domain)
-                }
-
-                Text(
-                    text = link.originalUrl,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    MetaItem(Icons.Rounded.CalendarMonth, link.createdAt)
-                    if (link.expiresAt != null) MetaItem(Icons.Rounded.CalendarMonth, "Expires ${link.expiresAt}")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MetaItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        Icon(icon, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 11.sp)
-    }
-}
-
-@Composable
-private fun ActionButtons(
     link: MockLink,
-    qrBitmap: ImageBitmap?,
-    onEdit: () -> Unit,
-    onMessage: (String) -> Unit,
+    onBack: () -> Unit,
+    onCopy: (MockLink) -> Unit,
+    onShare: (MockLink) -> Unit,
+    onShareQR: (MockLink) -> Unit,
+    onDelete: (MockLink) -> Unit,
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val shortDisplay = "smol.link/${link.shortCode}"
+    val qrBitmap = rememberQrBitmap(link.shortUrl)
+    var qrFullscreen by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
 
-    Row(
-        modifier = Modifier.horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        ActionButton(Icons.Rounded.ContentCopy, "Copy") {
-            val mgr = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            mgr.setPrimaryClip(ClipData.newPlainText("short URL", link.shortUrl))
-        }
-        ActionButton(Icons.Rounded.Share, "Share") {
-            context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"; putExtra(Intent.EXTRA_TEXT, link.shortUrl)
-            }, "Share link"))
-        }
-        ActionButton(Icons.Rounded.Download, "Save QR") {
-            if (qrBitmap == null) { onMessage("QR not ready yet"); return@ActionButton }
-            scope.launch {
-                val saved = saveQrToGallery(context, qrBitmap, link.shortCode)
-                onMessage(if (saved) "Saved to gallery" else "Failed to save QR")
-            }
-        }
-        ActionButton(Icons.Rounded.QrCode, "Share QR") {
-            if (qrBitmap == null) { onMessage("QR not ready yet"); return@ActionButton }
-            scope.launch {
-                shareQrImage(context, qrBitmap, link.shortCode)
-            }
-        }
-        ActionButton(Icons.Rounded.Edit, "Edit") { onEdit() }
-        ActionButton(
-            Icons.Rounded.Delete, "Delete",
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.error,
-        ) {}
-    }
-}
-
-private fun ImageBitmap.toWhiteBackgroundBitmap(): Bitmap {
-    val src = asAndroidBitmap()
-    val out = Bitmap.createBitmap(src.width, src.height, Bitmap.Config.ARGB_8888)
-    android.graphics.Canvas(out).apply {
-        drawColor(android.graphics.Color.WHITE)
-        drawBitmap(src, 0f, 0f, null)
-    }
-    return out
-}
-
-private suspend fun saveQrToGallery(context: Context, bitmap: ImageBitmap, shortCode: String): Boolean =
-    withContext(Dispatchers.IO) {
-        runCatching {
-            val androidBitmap = bitmap.toWhiteBackgroundBitmap()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val values = ContentValues().apply {
-                    put(MediaStore.Images.Media.DISPLAY_NAME, "qr_$shortCode.png")
-                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                    put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/LilUrl")
-                }
-                val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                    ?: return@runCatching false
-                context.contentResolver.openOutputStream(uri)?.use { out ->
-                    androidBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                }
-            } else {
-                val dir = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "LilUrl")
-                    .also { it.mkdirs() }
-                File(dir, "qr_$shortCode.png").outputStream().use { out ->
-                    androidBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                }
-            }
-            true
-        }.getOrDefault(false)
-    }
-
-private suspend fun shareQrImage(context: Context, bitmap: ImageBitmap, shortCode: String) =
-    withContext(Dispatchers.IO) {
-        runCatching {
-            val cacheDir = File(context.cacheDir, "qr_codes").also { it.mkdirs() }
-            val file = File(cacheDir, "qr_$shortCode.png")
-            file.outputStream().use { out ->
-                bitmap.toWhiteBackgroundBitmap().compress(Bitmap.CompressFormat.PNG, 100, out)
-            }
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "image/png"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            context.startActivity(Intent.createChooser(intent, "Share QR Code"))
-        }
-    }
-
-@Composable
-private fun ActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    containerColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.secondaryContainer,
-    contentColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSecondaryContainer,
-    onClick: () -> Unit,
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        FilledTonalIconButton(
-            onClick = onClick,
-            colors = IconButtonDefaults.filledTonalIconButtonColors(
-                containerColor = containerColor,
-                contentColor = contentColor,
-            ),
-        ) {
-            Icon(icon, contentDescription = label, modifier = Modifier.size(20.dp))
-        }
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
-    }
-}
-
-@Composable
-private fun StatsRow() {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatCard("Total clicks", "—", Icons.Rounded.TouchApp, Modifier.weight(1f))
-            StatCard("Visitors", "—", Icons.Rounded.ShowChart, Modifier.weight(1f))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatCard("Countries", "—", Icons.Rounded.Public, Modifier.weight(1f))
-            StatCard("Mobile %", "—", Icons.Rounded.Link, Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun SparklineCard(onFullAnalytics: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(0.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Clicks — last 7 days", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            }
-
-            WipBanner("Sample chart — will show real click data once the analytics backend is ready.")
-
-            SparklineChart(data = MOCK_SPARKLINE_7D, modifier = Modifier.height(120.dp))
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                MOCK_DAYS_LABELS.forEach { day ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = {
                     Text(
-                        day,
-                        Modifier.weight(1f),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                        fontSize = 10.sp,
+                        shortDisplay,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { onCopy(link) }) {
+                        Icon(Icons.Rounded.MoreVert, contentDescription = "More")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                // QR code — centered, tappable
+                item {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp, bottom = 8.dp),
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(24.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            modifier = Modifier.clickable { qrFullscreen = true },
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(18.dp),
+                            ) {
+                                QrCodeDisplay(
+                                    bitmap = qrBitmap,
+                                    size = 200.dp,
+                                )
+                                Spacer(Modifier.height(12.dp))
+                                Text(
+                                    "Tap to fullscreen",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    letterSpacing = 0.2.sp,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Action buttons
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        FilledTonalButton(
+                            onClick = { onCopy(link) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                Icons.Rounded.ContentCopy,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Copy", maxLines = 1)
+                        }
+                        FilledTonalButton(
+                            onClick = { onShare(link) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                Icons.Rounded.Share,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("Share", maxLines = 1)
+                        }
+                        FilledTonalButton(
+                            onClick = { onShareQR(link) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                Icons.Rounded.QrCode2,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Text("QR", maxLines = 1)
+                        }
+                    }
+                }
+
+                // Detail rows card
+                item {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                    ) {
+                        Column {
+                            DetailRow("Original URL", link.originalUrl, mono = true)
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                            DetailRow("Created", link.createdAt)
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                            DetailRow("Expires", link.expiresAt ?: "Never")
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                            DetailRow("Total clicks", link.totalClicks.toString())
+                        }
+                    }
+                }
+
+                // Delete zone
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                    ) {
+                        if (!confirmDelete) {
+                            TextButton(
+                                onClick = { confirmDelete = true },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error,
+                                ),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Delete,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Delete link")
+                            }
+                        } else {
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = MaterialTheme.colorScheme.errorContainer,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        "Delete this link?",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        "The short URL will stop working. This can't be undone.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.85f),
+                                    )
+                                    Spacer(Modifier.height(14.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        TextButton(
+                                            onClick = { confirmDelete = false },
+                                            colors = ButtonDefaults.textButtonColors(
+                                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                            ),
+                                        ) { Text("Cancel") }
+                                        Spacer(Modifier.width(6.dp))
+                                        Button(
+                                            onClick = { onDelete(link) },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                            ),
+                                        ) { Text("Delete") }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(40.dp))
                 }
             }
+        }
 
-            OutlinedButton(
-                onClick = onFullAnalytics,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+        // Fullscreen QR overlay
+        AnimatedVisibility(
+            visible = qrFullscreen,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.92f))
+                    .clickable { qrFullscreen = false },
+                contentAlignment = Alignment.Center,
             ) {
-                Text("Full Analytics")
+                IconButton(
+                    onClick = { qrFullscreen = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 56.dp, end = 16.dp),
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(50),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {
+                        Icon(
+                            Icons.Rounded.Close,
+                            contentDescription = "Close",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(22.dp),
+                        )
+                    }
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(28.dp),
+                    modifier = Modifier.clickable(enabled = false) {},
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.White,
+                    ) {
+                        QrCodeDisplay(
+                            bitmap = qrBitmap,
+                            modifier = Modifier.padding(16.dp),
+                            size = 280.dp,
+                        )
+                    }
+                    Text(
+                        shortDisplay,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color.White,
+                        fontSize = 17.sp,
+                        letterSpacing = 0.4.sp,
+                    )
+                    FilledTonalButton(onClick = { onShareQR(link) }) {
+                        Icon(
+                            Icons.Rounded.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Share QR")
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun DomainChipSmall(domain: String) {
-    androidx.compose.material3.Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant),
-    ) {
+private fun DetailRow(label: String, value: String, mono: Boolean = false) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
         Text(
-            text = domain,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.8.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 10.sp,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = if (mono) FontFamily.Monospace else null,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }

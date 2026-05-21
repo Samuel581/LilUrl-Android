@@ -1,7 +1,6 @@
 package com.example.myapplication.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,19 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,6 +36,7 @@ import com.example.myapplication.LilUrlApp
 import com.example.myapplication.ui.components.LilUrlTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
+import com.example.myapplication.ui.main.SmolLogo
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -89,38 +84,27 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(Modifier.height(56.dp))
+            Spacer(Modifier.height(40.dp))
 
-            Surface(
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.size(88.dp),
-            ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Icon(
-                        imageVector = Icons.Filled.Link,
-                        contentDescription = null,
-                        modifier = Modifier.size(44.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
-                }
-            }
+            SmolLogo(size = 44)
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
             Text(
-                text = "lil-url",
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.primary,
+                text = "Welcome back",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
+            Spacer(Modifier.height(6.dp))
+
             Text(
-                text = "Short links, big impact",
+                text = "Sign in to manage your smol links.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(36.dp))
 
             LilUrlTextField(
                 value = email,
@@ -149,12 +133,14 @@ fun LoginScreen(
             Spacer(Modifier.height(24.dp))
 
             LoadingButton(
-                text = "Log In",
+                text = "Log in",
                 isLoading = state is UiState.Loading,
                 onClick = {
                     attemptLogin(email, password, viewModel, { emailError = it }, { passwordError = it })
                 },
             )
+
+            Spacer(Modifier.height(8.dp))
 
             TextButton(
                 onClick = onNavigateToRegister,

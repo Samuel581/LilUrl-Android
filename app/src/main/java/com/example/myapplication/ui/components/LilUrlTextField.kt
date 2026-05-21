@@ -17,7 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.example.myapplication.ui.theme.LilUrlTheme
 
 @Composable
@@ -62,17 +61,9 @@ fun LilUrlTextField(
 
 @Preview(showBackground = true)
 @Composable
-private fun LilUrlTextFieldPreview(
-    @PreviewParameter(TextFieldParams::class) config: TextFieldPreviewConfig,
-) {
+private fun LilUrlTextFieldPreview() {
     LilUrlTheme(darkTheme = false, dynamicColor = false) {
-        var value by remember { mutableStateOf(config.value) }
-        LilUrlTextField(
-            value = value,
-            onValueChange = { value = it },
-            label = config.label,
-            errorMessage = config.error,
-            enabled = config.enabled,
-        )
+        var value by remember { mutableStateOf("") }
+        LilUrlTextField(value = value, onValueChange = { value = it }, label = "Email")
     }
 }

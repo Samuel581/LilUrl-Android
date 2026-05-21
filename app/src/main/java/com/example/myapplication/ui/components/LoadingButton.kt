@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.LilUrlTheme
 
@@ -44,15 +43,8 @@ fun LoadingButton(
 
 @Preview(showBackground = true)
 @Composable
-private fun LoadingButtonPreview(
-    @PreviewParameter(LoadingButtonParams::class) params: Triple<String, Boolean, Boolean>,
-) {
+private fun LoadingButtonPreview() {
     LilUrlTheme(darkTheme = false, dynamicColor = false) {
-        LoadingButton(
-            text = params.first,
-            isLoading = params.second,
-            onClick = {},
-            enabled = params.third,
-        )
+        LoadingButton(text = "Log in", isLoading = false, onClick = {})
     }
 }
