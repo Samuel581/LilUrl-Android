@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkClient {
-    const val ROOT_URL = "https://lil-url-production.up.railway.app/"
+    const val ROOT_URL = "https://smolify.link/"
     val BASE_URL = "${ROOT_URL}api/"
 
     fun create(authStorage: AuthStorage): ApiService {
