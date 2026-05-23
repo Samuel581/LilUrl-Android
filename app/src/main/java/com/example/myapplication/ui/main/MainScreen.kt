@@ -167,17 +167,16 @@ fun MainScreen(onLogout: () -> Unit) {
                 link = link,
                 onBack = { vm.closeDetail() },
                 onCopy = { l ->
-                    copyToClipboard(context, "smol.link/${l.shortCode}")
-                    scope.launch { snackbarHostState.showSnackbar("Copied smol.link/${l.shortCode}") }
+                    copyToClipboard(context, l.shortUrl)
+                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.shortUrl}") }
                 },
-                onShare = { l -> shareText(context, "smol.link/${l.shortCode}") },
-                onShareQR = { l ->
-                    shareText(context, "smol.link/${l.shortCode}")
-                    scope.launch { snackbarHostState.showSnackbar("Sharing QR for /${l.shortCode}…") }
+                onShare = { l -> shareText(context, l.shortUrl) },
+                onShareQR = {
+                    scope.launch { snackbarHostState.showSnackbar("QR shared") }
                 },
                 onDelete = { l ->
                     vm.deleteLink(l)
-                    scope.launch { snackbarHostState.showSnackbar("Deleted smol.link/${l.shortCode}") }
+                    scope.launch { snackbarHostState.showSnackbar("Deleted ${l.shortUrl}") }
                 },
             )
         } else {
@@ -186,8 +185,8 @@ fun MainScreen(onLogout: () -> Unit) {
                 onLogout = onLogout,
                 onOpenLink = { vm.openDetail(it) },
                 onCopy = { l ->
-                    copyToClipboard(context, "smol.link/${l.shortCode}")
-                    scope.launch { snackbarHostState.showSnackbar("Copied smol.link/${l.shortCode}") }
+                    copyToClipboard(context, l.shortUrl)
+                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.shortUrl}") }
                 },
                 onCreateLink = { sheetOpen = true },
                 snackbarHostState = snackbarHostState,
@@ -464,7 +463,7 @@ private fun LinkCard(link: MockLink, onTap: (MockLink) -> Unit, onCopy: (MockLin
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "smol.link/${link.shortCode}",
+                    text = link.shortUrl.removePrefix("https://"),
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 17.sp,
@@ -578,7 +577,7 @@ private fun AccountTabContent(vm: MainViewModel, onLogout: () -> Unit) {
                     Spacer(Modifier.width(16.dp))
                     Column {
                         Text(
-                            vm.profileEmail.ifEmpty { "smol.link account" },
+                            vm.profileEmail.ifEmpty { "Smol Link account" },
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
@@ -750,7 +749,7 @@ private fun ShortenBottomSheet(vm: MainViewModel, onClose: () -> Unit) {
                 label = { Text("Custom alias") },
                 prefix = {
                     Text(
-                        "smol.link/",
+                        "lil-url-production.up.railway.app/s/",
                         fontFamily = FontFamily.Monospace,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

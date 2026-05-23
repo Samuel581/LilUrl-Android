@@ -66,7 +66,7 @@ fun LinkDetailScreen(
     onShareQR: (MockLink) -> Unit,
     onDelete: (MockLink) -> Unit,
 ) {
-    val shortDisplay = "smol.link/${link.shortCode}"
+    val shortDisplay = "lil-url-production.up.railway.app/s/${link.shortCode}"
     val qrBitmap = rememberQrBitmap(link.shortUrl)
     var qrFullscreen by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }

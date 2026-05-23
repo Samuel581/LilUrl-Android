@@ -78,7 +78,7 @@ fun QrCodeDisplay(
 @Composable
 private fun QrCodeDisplayPreview() {
     LilUrlTheme(darkTheme = false, dynamicColor = false) {
-        val bitmap = rememberQrBitmap("https://smol.link/example")
+        val bitmap = rememberQrBitmap("https://lil-url-production.up.railway.app/s/example")
         QrCodeDisplay(bitmap)
     }
 }
