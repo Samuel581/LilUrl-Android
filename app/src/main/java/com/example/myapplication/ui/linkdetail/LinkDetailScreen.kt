@@ -77,9 +77,7 @@ fun LinkDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        shortDisplay,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 16.sp,
+                        "Link details",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -194,6 +192,11 @@ fun LinkDetailScreen(
                     ) {
                         Column {
                             DetailRow("Original URL", link.originalUrl, mono = true)
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                            DetailRow("Short URL", shortDisplay, mono = true)
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant,
