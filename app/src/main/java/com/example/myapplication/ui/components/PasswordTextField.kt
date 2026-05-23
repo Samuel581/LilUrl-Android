@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.ui.theme.LilUrlTheme
+import com.example.myapplication.ui.theme.SmolifyTheme
 
 @Composable
 fun PasswordTextField(
@@ -31,7 +31,7 @@ fun PasswordTextField(
     enabled: Boolean = true,
 ) {
     var visible by remember { mutableStateOf(false) }
-    LilUrlTextField(
+    SmolifyTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
@@ -57,7 +57,7 @@ fun PasswordTextField(
 @Preview(showBackground = true)
 @Composable
 private fun PasswordTextFieldPreview() {
-    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
         var value by remember { mutableStateOf("") }
         PasswordTextField(value = value, onValueChange = { value = it }, label = "Password")
     }

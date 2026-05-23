@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.LilUrlApp
+import com.example.myapplication.SmolifyApp
 import com.example.myapplication.data.mock.MockLink
 import com.example.myapplication.data.mock.toMockLink
 import com.example.myapplication.data.repository.AuthRepository
@@ -105,7 +105,7 @@ class MainViewModel(
     }
 
     companion object {
-        fun factory(app: LilUrlApp) = ViewModelFactory {
+        fun factory(app: SmolifyApp) = ViewModelFactory {
             MainViewModel(app.authRepository, app.urlRepository)
         }
     }

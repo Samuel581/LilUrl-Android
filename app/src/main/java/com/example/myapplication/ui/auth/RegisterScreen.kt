@@ -31,11 +31,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplication.LilUrlApp
-import com.example.myapplication.ui.components.LilUrlTextField
+import com.example.myapplication.SmolifyApp
+import com.example.myapplication.ui.components.SmolifyTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
-import com.example.myapplication.ui.main.SmolLogo
+import com.example.myapplication.ui.main.SmolifyLogo
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -44,7 +44,7 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    val app = LocalContext.current.applicationContext as LilUrlApp
+    val app = LocalContext.current.applicationContext as SmolifyApp
     val viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.factory(app.authRepository))
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -78,7 +78,7 @@ fun RegisterScreen(
         ) {
             Spacer(Modifier.height(40.dp))
 
-            SmolLogo(size = 44)
+            SmolifyLogo(size = 44)
 
             Spacer(Modifier.height(24.dp))
 
@@ -98,7 +98,7 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            LilUrlTextField(
+            SmolifyTextField(
                 value = email,
                 onValueChange = { email = it; emailError = null },
                 label = "Email",

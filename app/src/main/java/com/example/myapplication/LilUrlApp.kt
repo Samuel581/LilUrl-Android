@@ -6,7 +6,7 @@ import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.data.repository.AuthRepository
 import com.example.myapplication.data.repository.UrlRepository
 
-class LilUrlApp : Application() {
+class SmolifyApp : Application() {
     val authStorage by lazy { AuthStorage(this) }
     private val apiService by lazy { NetworkClient.create(authStorage) }
     val authRepository by lazy { AuthRepository(apiService, authStorage) }
