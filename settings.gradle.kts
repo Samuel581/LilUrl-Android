@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LilUrl"
+rootProject.name = "Smolify"
 include(":app")

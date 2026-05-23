@@ -34,7 +34,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Dependency injection — manual via Application class
 
-`LilUrlApp` creates and holds `authStorage`, `authRepository`, and `urlRepository` as lazy singletons. Screens retrieve them via `LocalContext.current.applicationContext as LilUrlApp`. No Hilt/Dagger.
+`SmolifyApp` creates and holds `authStorage`, `authRepository`, and `urlRepository` as lazy singletons. Screens retrieve them via `LocalContext.current.applicationContext as SmolifyApp`. No Hilt/Dagger.
 
 ### State flow
 
@@ -44,7 +44,7 @@ Repositories return `util.Result<T>` (Success/Error). ViewModels map this to `ut
 
 ### Backend
 
-Single Retrofit `ApiService` against `https://lil-url-production.up.railway.app/api/`. `AuthInterceptor` injects the JWT from `AuthStorage` into every request. The server's `shortUrl` field returns an internal hostname — repositories rewrite it to `ROOT_URL/s/{shortCode}` before surfacing it to the UI.
+Single Retrofit `ApiService` against `https://smolify.link/api/`. `AuthInterceptor` injects the JWT from `AuthStorage` into every request. The server's `shortUrl` field returns an internal hostname — repositories rewrite it to `ROOT_URL/s/{shortCode}` before surfacing it to the UI.
 
 JWT is stored in `EncryptedSharedPreferences` (AES-256-GCM).
 
