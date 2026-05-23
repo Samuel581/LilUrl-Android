@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.data.mock.MockLink
+import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.ui.components.QrCodeDisplay
 import com.example.myapplication.ui.components.rememberQrBitmap
 
@@ -66,7 +67,7 @@ fun LinkDetailScreen(
     onShareQR: (MockLink) -> Unit,
     onDelete: (MockLink) -> Unit,
 ) {
-    val shortDisplay = "lil-url-production.up.railway.app/s/${link.shortCode}"
+    val shortDisplay = "${NetworkClient.ROOT_URL}s/${link.shortCode}"
     val qrBitmap = rememberQrBitmap(link.shortUrl)
     var qrFullscreen by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
