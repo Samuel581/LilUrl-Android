@@ -17,10 +17,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.myapplication.ui.theme.LilUrlTheme
+import com.example.myapplication.ui.theme.SmolifyTheme
 
 @Composable
-fun LilUrlTextField(
+fun SmolifyTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -61,9 +61,9 @@ fun LilUrlTextField(
 
 @Preview(showBackground = true)
 @Composable
-private fun LilUrlTextFieldPreview() {
-    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+private fun SmolifyTextFieldPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
         var value by remember { mutableStateOf("") }
-        LilUrlTextField(value = value, onValueChange = { value = it }, label = "Email")
+        SmolifyTextField(value = value, onValueChange = { value = it }, label = "Email")
     }
 }

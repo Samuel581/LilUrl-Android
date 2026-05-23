@@ -85,7 +85,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplication.LilUrlApp
+import com.example.myapplication.SmolifyApp
 import com.example.myapplication.data.mock.MockLink
 import com.example.myapplication.ui.linkdetail.LinkDetailScreen
 import com.example.myapplication.util.UiState
@@ -95,7 +95,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun SmolLogo(size: Int = 32) {
+fun SmolifyLogo(size: Int = 32) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             contentAlignment = Alignment.Center,
@@ -115,7 +115,7 @@ fun SmolLogo(size: Int = 32) {
         }
         Spacer(Modifier.width((size * 0.3f).dp))
         Text(
-            text = "Smol Link",
+            text = "Smolify",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface,
@@ -127,7 +127,7 @@ fun SmolLogo(size: Int = 32) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(onLogout: () -> Unit) {
-    val app = LocalContext.current.applicationContext as LilUrlApp
+    val app = LocalContext.current.applicationContext as SmolifyApp
     val vm: MainViewModel = viewModel(factory = MainViewModel.factory(app))
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -265,7 +265,7 @@ private fun LinksTabContent(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { SmolLogo(size = 26) },
+            title = { SmolifyLogo(size = 26) },
             actions = {
                 IconButton(onClick = { vm.selectTab(1) }) {
                     Icon(Icons.Rounded.Person, contentDescription = "Account")
@@ -577,7 +577,7 @@ private fun AccountTabContent(vm: MainViewModel, onLogout: () -> Unit) {
                     Spacer(Modifier.width(16.dp))
                     Column {
                         Text(
-                            vm.profileEmail.ifEmpty { "Smol Link account" },
+                            vm.profileEmail.ifEmpty { "Smolify account" },
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
@@ -697,7 +697,7 @@ private fun ShortenBottomSheet(vm: MainViewModel, onClose: () -> Unit) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                "Paste a long link to get a smol one.",
+                "Paste a long link to get a Smolify one.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

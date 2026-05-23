@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.ui.theme.LilUrlTheme
+import com.example.myapplication.ui.theme.SmolifyTheme
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
@@ -77,7 +77,7 @@ fun QrCodeDisplay(
 @Preview(showBackground = true)
 @Composable
 private fun QrCodeDisplayPreview() {
-    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
         val bitmap = rememberQrBitmap("https://lil-url-production.up.railway.app/s/example")
         QrCodeDisplay(bitmap)
     }

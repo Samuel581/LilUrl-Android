@@ -32,11 +32,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplication.LilUrlApp
-import com.example.myapplication.ui.components.LilUrlTextField
+import com.example.myapplication.SmolifyApp
+import com.example.myapplication.ui.components.SmolifyTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
-import com.example.myapplication.ui.main.SmolLogo
+import com.example.myapplication.ui.main.SmolifyLogo
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -47,7 +47,7 @@ fun LoginScreen(
     successMessage: String? = null,
     onMessageShown: () -> Unit = {},
 ) {
-    val app = LocalContext.current.applicationContext as LilUrlApp
+    val app = LocalContext.current.applicationContext as SmolifyApp
     val viewModel: LoginViewModel = viewModel(factory = LoginViewModel.factory(app.authRepository))
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -86,7 +86,7 @@ fun LoginScreen(
         ) {
             Spacer(Modifier.height(40.dp))
 
-            SmolLogo(size = 44)
+            SmolifyLogo(size = 44)
 
             Spacer(Modifier.height(24.dp))
 
@@ -99,14 +99,14 @@ fun LoginScreen(
             Spacer(Modifier.height(6.dp))
 
             Text(
-                text = "Sign in to manage your smol links.",
+                text = "Sign in to manage your Smolify links.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(Modifier.height(36.dp))
 
-            LilUrlTextField(
+            SmolifyTextField(
                 value = email,
                 onValueChange = { email = it; emailError = null },
                 label = "Email",

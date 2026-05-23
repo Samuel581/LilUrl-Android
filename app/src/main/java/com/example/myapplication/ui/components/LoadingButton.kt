@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.ui.theme.LilUrlTheme
+import com.example.myapplication.ui.theme.SmolifyTheme
 
 @Composable
 fun LoadingButton(
@@ -44,7 +44,7 @@ fun LoadingButton(
 @Preview(showBackground = true)
 @Composable
 private fun LoadingButtonPreview() {
-    LilUrlTheme(darkTheme = false, dynamicColor = false) {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
         LoadingButton(text = "Log in", isLoading = false, onClick = {})
     }
 }

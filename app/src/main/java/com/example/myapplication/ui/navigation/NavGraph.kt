@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
-import com.example.myapplication.LilUrlApp
+import com.example.myapplication.SmolifyApp
 import com.example.myapplication.ui.auth.LoginScreen
 import com.example.myapplication.ui.auth.RegisterScreen
 import com.example.myapplication.ui.main.MainScreen
@@ -21,7 +21,7 @@ object Routes {
 
 @Composable
 fun AppNavGraph(navController: NavHostController = rememberNavController()) {
-    val app = LocalContext.current.applicationContext as LilUrlApp
+    val app = LocalContext.current.applicationContext as SmolifyApp
     val start = if (app.authStorage.isLoggedIn()) Routes.MAIN else Routes.LOGIN
 
     NavHost(navController = navController, startDestination = start) {
