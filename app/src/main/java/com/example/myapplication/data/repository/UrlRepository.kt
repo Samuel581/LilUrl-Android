@@ -4,19 +4,16 @@ import com.example.myapplication.data.remote.ApiService
 import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.data.remote.model.ShortenRequest
 import com.example.myapplication.data.remote.model.ShortenResponse
-import com.example.myapplication.data.remote.model.UrlItem
+import com.example.myapplication.data.remote.model.Link
 import com.example.myapplication.util.Result
 import com.example.myapplication.util.safeApiCall
 
 class UrlRepository(private val api: ApiService) {
-    suspend fun getLinks(): Result<List<UrlItem>> = safeApiCall {
+    suspend fun getLinks(): Result<List<Link>> = safeApiCall {
         val response = api.getLinks()
         if (response.isSuccessful) {
             val body = response.body() ?: emptyList()
-            val corrected = body.map { item ->
-                item.copy(shortUrl = "${NetworkClient.ROOT_URL}s/${item.shortCode}")
-            }
-            Result.Success(corrected)
+            Result.Success(body)
         } else {
             Result.Error(
                 when (response.code()) {
@@ -42,11 +39,7 @@ class UrlRepository(private val api: ApiService) {
         )
         if (response.isSuccessful) {
             val body = response.body()!!
-            // Server returns its internal hostname in shortUrl; rebuild from shortCode using /:code redirect
-            val corrected = body.copy(
-                shortUrl = "${NetworkClient.ROOT_URL}s/${body.shortCode}"
-            )
-            Result.Success(corrected)
+            Result.Success(body)
         } else {
             Result.Error(
                 when (response.code()) {

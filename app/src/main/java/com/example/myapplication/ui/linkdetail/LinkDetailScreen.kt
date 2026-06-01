@@ -52,7 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.data.mock.MockLink
+import com.example.myapplication.data.remote.model.Link
 import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.ui.components.QrCodeDisplay
 import com.example.myapplication.ui.components.rememberQrBitmap
@@ -60,14 +60,14 @@ import com.example.myapplication.ui.components.rememberQrBitmap
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LinkDetailScreen(
-    link: MockLink,
+    link: Link,
     onBack: () -> Unit,
-    onCopy: (MockLink) -> Unit,
-    onShare: (MockLink) -> Unit,
-    onShareQR: (MockLink) -> Unit,
-    onDelete: (MockLink) -> Unit,
+    onCopy: (Link) -> Unit,
+    onShare: (Link) -> Unit,
+    onShareQR: (Link) -> Unit,
+    onDelete: (Link) -> Unit,
 ) {
-    val shortDisplay = "${NetworkClient.ROOT_URL}s/${link.shortCode}"
+    val shortDisplay = "smolify.link/s/${link.shortCode}"
     val qrBitmap = rememberQrBitmap(link.shortUrl)
     var qrFullscreen by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
@@ -201,17 +201,12 @@ fun LinkDetailScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant,
                             )
-                            DetailRow("Created", link.createdAt)
+                            DetailRow("Created", link.createdAt ?: "Unknown")
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant,
                             )
                             DetailRow("Expires", link.expiresAt ?: "Never")
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant,
-                            )
-                            DetailRow("Total clicks", link.totalClicks.toString())
                         }
                     }
                 }

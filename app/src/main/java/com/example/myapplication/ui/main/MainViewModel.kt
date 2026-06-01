@@ -6,8 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.SmolifyApp
-import com.example.myapplication.data.mock.MockLink
-import com.example.myapplication.data.mock.toMockLink
+import com.example.myapplication.data.remote.model.Link
 import com.example.myapplication.data.repository.AuthRepository
 import com.example.myapplication.data.repository.UrlRepository
 import com.example.myapplication.util.Result
@@ -25,11 +24,11 @@ class MainViewModel(
         private set
 
     // Non-null when Link Detail is showing
-    var selectedLink by mutableStateOf<MockLink?>(null)
+    var selectedLink by mutableStateOf<Link?>(null)
         private set
 
     // Link list
-    var linksState by mutableStateOf<UiState<List<MockLink>>>(UiState.Loading)
+    var linksState by mutableStateOf<UiState<List<Link>>>(UiState.Loading)
         private set
 
     // Shorten form (used by the bottom sheet)
@@ -52,7 +51,7 @@ class MainViewModel(
 
     fun selectTab(index: Int) { selectedTab = index }
 
-    fun openDetail(link: MockLink) { selectedLink = link }
+    fun openDetail(link: Link) { selectedLink = link }
 
     fun closeDetail() { selectedLink = null }
 
@@ -60,7 +59,10 @@ class MainViewModel(
         linksState = UiState.Loading
         viewModelScope.launch {
             linksState = when (val r = urlRepository.getLinks()) {
-                is Result.Success -> UiState.Success(r.data.map { it.toMockLink() })
+                is Result.Success -> {
+                    val sorted = r.data.sortedByDescending { it.createdAt }
+                    UiState.Success(sorted)
+                }
                 is Result.Error -> UiState.Error(r.message, r.code)
             }
         }
@@ -85,10 +87,10 @@ class MainViewModel(
 
     fun resetShortenState() { shortenState = UiState.Idle }
 
-    fun deleteLink(link: MockLink) {
+    fun deleteLink(link: Link) {
         val current = (linksState as? UiState.Success)?.data ?: return
-        linksState = UiState.Success(current.filter { it.id != link.id })
-        if (selectedLink?.id == link.id) selectedLink = null
+        linksState = UiState.Success(current.filter { it.shortCode != link.shortCode })
+        if (selectedLink?.shortCode == link.shortCode) selectedLink = null
     }
 
     private fun loadProfile() {

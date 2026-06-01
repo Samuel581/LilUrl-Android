@@ -8,7 +8,7 @@ import com.example.myapplication.data.remote.model.RegisterRequest
 import com.example.myapplication.data.remote.model.RegisterResponse
 import com.example.myapplication.data.remote.model.ShortenRequest
 import com.example.myapplication.data.remote.model.ShortenResponse
-import com.example.myapplication.data.remote.model.UrlItem
+import com.example.myapplication.data.remote.model.Link
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,7 +28,7 @@ interface ApiService {
     suspend fun shorten(@Body request: ShortenRequest): Response<ShortenResponse>
 
     @GET("url")
-    suspend fun getLinks(): Response<List<UrlItem>>
+    suspend fun getLinks(): Response<List<Link>>
 
     @GET("profile")
     suspend fun getProfile(): Response<ProfileResponse>

@@ -10,13 +10,14 @@ data class ShortenResponse(
     val shortUrl: String,
     val shortCode: String,
     val originalUrl: String,
+    val createdAt: String? = null,
     val expiresAt: String? = null
 )
 
-data class UrlItem(
+data class Link(
     val shortUrl: String,
     val shortCode: String,
     val originalUrl: String,
-    val expiresAt: String? = null,
-    val createdAt: String? = null
+    val createdAt: String? = null,
+    val expiresAt: String? = null
 )
