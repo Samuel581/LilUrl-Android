@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.QrCode2
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
@@ -49,10 +51,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.data.remote.model.Link
+import com.example.myapplication.data.remote.model.publicUrl
 import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.ui.components.QrCodeDisplay
 import com.example.myapplication.ui.components.rememberQrBitmap
@@ -62,13 +66,14 @@ import com.example.myapplication.ui.components.rememberQrBitmap
 fun LinkDetailScreen(
     link: Link,
     onBack: () -> Unit,
+    onOpen: (Link) -> Unit,
     onCopy: (Link) -> Unit,
     onShare: (Link) -> Unit,
     onShareQR: (Link) -> Unit,
     onDelete: (Link) -> Unit,
 ) {
     val shortDisplay = "smolify.link/s/${link.shortCode}"
-    val qrBitmap = rememberQrBitmap(link.shortUrl)
+    val qrBitmap = rememberQrBitmap(link.publicUrl)
     var qrFullscreen by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
 
@@ -89,7 +94,7 @@ fun LinkDetailScreen(
                 },
                 actions = {
                     IconButton(onClick = { onCopy(link) }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = "More")
+                        Icon(Icons.Rounded.ContentCopy, contentDescription = "Copy")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -136,47 +141,66 @@ fun LinkDetailScreen(
 
                 // Action buttons
                 item {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        FilledTonalButton(
-                            onClick = { onCopy(link) },
-                            modifier = Modifier.weight(1f),
+                        Button(
+                            onClick = { onOpen(link) },
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(vertical = 12.dp)
                         ) {
                             Icon(
-                                Icons.Rounded.ContentCopy,
+                                Icons.Rounded.OpenInNew,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(20.dp),
                             )
-                            Spacer(Modifier.width(4.dp))
-                            Text("Copy", maxLines = 1)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Open redirected URL", fontWeight = FontWeight.SemiBold)
                         }
-                        FilledTonalButton(
-                            onClick = { onShare(link) },
-                            modifier = Modifier.weight(1f),
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Icon(
-                                Icons.Rounded.Share,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text("Share", maxLines = 1)
-                        }
-                        FilledTonalButton(
-                            onClick = { onShareQR(link) },
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Icon(
-                                Icons.Rounded.QrCode2,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text("QR", maxLines = 1)
+                            FilledTonalButton(
+                                onClick = { onCopy(link) },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.ContentCopy,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Spacer(Modifier.width(4.dp))
+                                Text("Copy", maxLines = 1)
+                            }
+                            FilledTonalButton(
+                                onClick = { onShare(link) },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Share,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Spacer(Modifier.width(4.dp))
+                                Text("Share", maxLines = 1)
+                            }
+                            FilledTonalButton(
+                                onClick = { onShareQR(link) },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.QrCode2,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Spacer(Modifier.width(4.dp))
+                                Text("QR", maxLines = 1)
+                            }
                         }
                     }
                 }

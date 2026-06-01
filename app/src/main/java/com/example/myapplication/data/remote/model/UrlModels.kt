@@ -21,3 +21,5 @@ data class Link(
     val createdAt: String? = null,
     val expiresAt: String? = null
 )
+
+val Link.publicUrl: String get() = "https://smolify.link/s/$shortCode"
