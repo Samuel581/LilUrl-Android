@@ -86,7 +86,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.SmolifyApp
-import com.example.myapplication.data.mock.MockLink
+import com.example.myapplication.data.remote.model.Link
 import com.example.myapplication.ui.linkdetail.LinkDetailScreen
 import com.example.myapplication.util.UiState
 import kotlinx.coroutines.launch
@@ -204,8 +204,8 @@ fun MainScreen(onLogout: () -> Unit) {
 private fun DashboardScreen(
     vm: MainViewModel,
     onLogout: () -> Unit,
-    onOpenLink: (MockLink) -> Unit,
-    onCopy: (MockLink) -> Unit,
+    onOpenLink: (Link) -> Unit,
+    onCopy: (Link) -> Unit,
     onCreateLink: () -> Unit,
     snackbarHostState: SnackbarHostState,
 ) {
@@ -257,8 +257,8 @@ private fun DashboardScreen(
 @Composable
 private fun LinksTabContent(
     vm: MainViewModel,
-    onOpenLink: (MockLink) -> Unit,
-    onCopy: (MockLink) -> Unit,
+    onOpenLink: (Link) -> Unit,
+    onCopy: (Link) -> Unit,
     onCreateLink: () -> Unit,
 ) {
     var search by remember { mutableStateOf("") }
@@ -375,7 +375,7 @@ private fun LinksTabContent(
                                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
                                 )
                             }
-                            items(filtered, key = { it.id }) { link ->
+                            items(filtered, key = { it.shortCode }) { link ->
                                 LinkCard(link = link, onTap = onOpenLink, onCopy = onCopy)
                             }
                         } else {
@@ -447,7 +447,7 @@ private fun EmptyLinksState(onCreate: () -> Unit) {
 }
 
 @Composable
-private fun LinkCard(link: MockLink, onTap: (MockLink) -> Unit, onCopy: (MockLink) -> Unit) {
+private fun LinkCard(link: Link, onTap: (Link) -> Unit, onCopy: (Link) -> Unit) {
     val expiryInfo = link.expiresAt?.let { expiryBadge(it) }
 
     Surface(
@@ -463,7 +463,7 @@ private fun LinkCard(link: MockLink, onTap: (MockLink) -> Unit, onCopy: (MockLin
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = link.shortUrl.removePrefix("https://"),
+                    text = "smolify.link/s/${link.shortCode}",
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 17.sp,
@@ -512,11 +512,13 @@ private fun LinkCard(link: MockLink, onTap: (MockLink) -> Unit, onCopy: (MockLin
                             }
                         }
                     }
-                    Text(
-                        "${link.totalClicks} click${if (link.totalClicks == 1) "" else "s"}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    link.createdAt?.let { created ->
+                        Text(
+                            "Created ${formatRelativeDate(created)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
             IconButton(onClick = { onCopy(link) }) {
@@ -596,11 +598,6 @@ private fun AccountTabContent(vm: MainViewModel, onLogout: () -> Unit) {
             val links = (vm.linksState as? UiState.Success)?.data ?: emptyList()
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 AccountStatCard("Total links", links.size.toString(), Modifier.weight(1f))
-                AccountStatCard(
-                    "Total clicks",
-                    links.sumOf { it.totalClicks }.toString(),
-                    Modifier.weight(1f),
-                )
             }
             Spacer(Modifier.height(20.dp))
         }
@@ -749,7 +746,7 @@ private fun ShortenBottomSheet(vm: MainViewModel, onClose: () -> Unit) {
                 label = { Text("Custom alias") },
                 prefix = {
                     Text(
-                        "lil-url-production.up.railway.app/s/",
+                        "smolify.link/s/",
                         fontFamily = FontFamily.Monospace,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -830,6 +827,22 @@ private fun formatIso8601(millis: Long): String =
 
 private fun formatDisplay(millis: Long): String =
     SimpleDateFormat("MMM d, yyyy", Locale.US).format(Date(millis))
+
+private fun formatRelativeDate(isoDate: String): String = try {
+    val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+    val d = fmt.parse(isoDate.substringBefore(".")) ?: return isoDate
+    val diff = System.currentTimeMillis() - d.time
+    val seconds = diff / 1000
+    val minutes = seconds / 60
+    val hours = minutes / 60
+    val days = hours / 24
+    when {
+        days > 0 -> "${days}d ago"
+        hours > 0 -> "${hours}h ago"
+        minutes > 0 -> "${minutes}m ago"
+        else -> "just now"
+    }
+} catch (e: Exception) { isoDate }
 
 private data class ExpiryBadge(val label: String, val warning: Boolean)
 
