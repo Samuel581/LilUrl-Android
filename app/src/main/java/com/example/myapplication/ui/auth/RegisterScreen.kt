@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ import com.example.myapplication.ui.components.SmolifyTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
 import com.example.myapplication.ui.main.SmolifyLogo
+import com.example.myapplication.ui.theme.SmolifyTheme
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -209,4 +211,67 @@ private fun attemptRegister(
         setConfirmError("Passwords don't match"); valid = false
     } else setConfirmError(null)
     if (valid) viewModel.register(email.trim(), password)
+}
+
+@Preview(showBackground = true, name = "Register – idle")
+@Composable
+private fun RegisterScreenIdlePreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "",
+            emailError = null,
+            password = "",
+            passwordError = null,
+            confirm = "",
+            confirmError = null,
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register – validation errors")
+@Composable
+private fun RegisterScreenErrorPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "bad",
+            emailError = "Enter a valid email address",
+            password = "123",
+            passwordError = "Password must be at least 8 characters",
+            confirm = "456",
+            confirmError = "Passwords don't match",
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register – loading")
+@Composable
+private fun RegisterScreenLoadingPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "user@example.com",
+            emailError = null,
+            password = "password123",
+            passwordError = null,
+            confirm = "password123",
+            confirmError = null,
+            isLoading = true,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
 }
