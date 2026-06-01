@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,6 +66,44 @@ fun RegisterScreen(
         }
     }
 
+    RegisterScreenContent(
+        email = email,
+        emailError = emailError,
+        password = password,
+        passwordError = passwordError,
+        confirm = confirm,
+        confirmError = confirmError,
+        isLoading = state is UiState.Loading,
+        snackbarHostState = snackbarHostState,
+        onEmailChange = { email = it; emailError = null },
+        onPasswordChange = { password = it; passwordError = null },
+        onConfirmChange = { confirm = it; confirmError = null },
+        onRegister = {
+            attemptRegister(
+                email, password, confirm, viewModel,
+                { emailError = it }, { passwordError = it }, { confirmError = it },
+            )
+        },
+        onNavigateBack = onNavigateBack,
+    )
+}
+
+@Composable
+private fun RegisterScreenContent(
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    confirm: String,
+    confirmError: String?,
+    isLoading: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmChange: (String) -> Unit,
+    onRegister: () -> Unit,
+    onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
             modifier = Modifier
@@ -100,11 +139,11 @@ fun RegisterScreen(
 
             SmolifyTextField(
                 value = email,
-                onValueChange = { email = it; emailError = null },
+                onValueChange = onEmailChange,
                 label = "Email",
                 leadingIcon = Icons.Filled.Email,
                 errorMessage = emailError,
-                keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
             )
 
@@ -112,7 +151,7 @@ fun RegisterScreen(
 
             PasswordTextField(
                 value = password,
-                onValueChange = { password = it; passwordError = null },
+                onValueChange = onPasswordChange,
                 label = "Password",
                 errorMessage = passwordError,
                 supportingText = if (passwordError == null) "At least 8 characters" else null,
@@ -123,25 +162,19 @@ fun RegisterScreen(
 
             PasswordTextField(
                 value = confirm,
-                onValueChange = { confirm = it; confirmError = null },
+                onValueChange = onConfirmChange,
                 label = "Confirm password",
                 errorMessage = confirmError,
                 imeAction = ImeAction.Done,
-                onImeAction = {
-                    attemptRegister(email, password, confirm, viewModel,
-                        { emailError = it }, { passwordError = it }, { confirmError = it })
-                },
+                onImeAction = onRegister,
             )
 
             Spacer(Modifier.height(24.dp))
 
             LoadingButton(
                 text = "Create account",
-                isLoading = state is UiState.Loading,
-                onClick = {
-                    attemptRegister(email, password, confirm, viewModel,
-                        { emailError = it }, { passwordError = it }, { confirmError = it })
-                },
+                isLoading = isLoading,
+                onClick = onRegister,
             )
 
             TextButton(
