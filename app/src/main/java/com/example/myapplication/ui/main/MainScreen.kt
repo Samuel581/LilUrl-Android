@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -87,6 +88,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.SmolifyApp
 import com.example.myapplication.data.remote.model.Link
+import com.example.myapplication.data.remote.model.publicUrl
 import com.example.myapplication.ui.linkdetail.LinkDetailScreen
 import com.example.myapplication.util.UiState
 import kotlinx.coroutines.launch
@@ -166,17 +168,18 @@ fun MainScreen(onLogout: () -> Unit) {
             LinkDetailScreen(
                 link = link,
                 onBack = { vm.closeDetail() },
+                onOpen = { l -> openUrl(context, l.originalUrl) },
                 onCopy = { l ->
-                    copyToClipboard(context, l.shortUrl)
-                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.shortUrl}") }
+                    copyToClipboard(context, l.publicUrl)
+                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.publicUrl}") }
                 },
-                onShare = { l -> shareText(context, l.shortUrl) },
+                onShare = { l -> shareText(context, l.publicUrl) },
                 onShareQR = {
                     scope.launch { snackbarHostState.showSnackbar("QR shared") }
                 },
                 onDelete = { l ->
                     vm.deleteLink(l)
-                    scope.launch { snackbarHostState.showSnackbar("Deleted ${l.shortUrl}") }
+                    scope.launch { snackbarHostState.showSnackbar("Deleted ${l.publicUrl}") }
                 },
             )
         } else {
@@ -185,8 +188,8 @@ fun MainScreen(onLogout: () -> Unit) {
                 onLogout = onLogout,
                 onOpenLink = { vm.openDetail(it) },
                 onCopy = { l ->
-                    copyToClipboard(context, l.shortUrl)
-                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.shortUrl}") }
+                    copyToClipboard(context, l.publicUrl)
+                    scope.launch { snackbarHostState.showSnackbar("Copied ${l.publicUrl}") }
                 },
                 onCreateLink = { sheetOpen = true },
                 snackbarHostState = snackbarHostState,
@@ -463,7 +466,7 @@ private fun LinkCard(link: Link, onTap: (Link) -> Unit, onCopy: (Link) -> Unit) 
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "smolify.link/s/${link.shortCode}",
+                    text = link.publicUrl.removePrefix("https://"),
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 17.sp,
@@ -860,6 +863,15 @@ private fun expiryBadge(isoDate: String): ExpiryBadge? = try {
         )
     }
 } catch (e: Exception) { null }
+
+private fun openUrl(context: Context, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Handle case where no browser is installed or URL is invalid
+    }
+}
 
 private fun copyToClipboard(context: Context, text: String) {
     val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
