@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.data.mock.MockLink
+import com.example.myapplication.data.remote.NetworkClient
 import com.example.myapplication.ui.components.QrCodeDisplay
 import com.example.myapplication.ui.components.rememberQrBitmap
 
@@ -66,7 +67,7 @@ fun LinkDetailScreen(
     onShareQR: (MockLink) -> Unit,
     onDelete: (MockLink) -> Unit,
 ) {
-    val shortDisplay = "lil-url-production.up.railway.app/s/${link.shortCode}"
+    val shortDisplay = "${NetworkClient.ROOT_URL}s/${link.shortCode}"
     val qrBitmap = rememberQrBitmap(link.shortUrl)
     var qrFullscreen by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
@@ -76,9 +77,7 @@ fun LinkDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        shortDisplay,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 16.sp,
+                        "Link details",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -193,6 +192,11 @@ fun LinkDetailScreen(
                     ) {
                         Column {
                             DetailRow("Original URL", link.originalUrl, mono = true)
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                            DetailRow("Short URL", shortDisplay, mono = true)
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant,

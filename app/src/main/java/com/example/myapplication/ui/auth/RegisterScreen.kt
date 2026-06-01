@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +38,7 @@ import com.example.myapplication.ui.components.SmolifyTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
 import com.example.myapplication.ui.main.SmolifyLogo
+import com.example.myapplication.ui.theme.SmolifyTheme
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -65,6 +68,44 @@ fun RegisterScreen(
         }
     }
 
+    RegisterScreenContent(
+        email = email,
+        emailError = emailError,
+        password = password,
+        passwordError = passwordError,
+        confirm = confirm,
+        confirmError = confirmError,
+        isLoading = state is UiState.Loading,
+        snackbarHostState = snackbarHostState,
+        onEmailChange = { email = it; emailError = null },
+        onPasswordChange = { password = it; passwordError = null },
+        onConfirmChange = { confirm = it; confirmError = null },
+        onRegister = {
+            attemptRegister(
+                email, password, confirm, viewModel,
+                { emailError = it }, { passwordError = it }, { confirmError = it },
+            )
+        },
+        onNavigateBack = onNavigateBack,
+    )
+}
+
+@Composable
+private fun RegisterScreenContent(
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    confirm: String,
+    confirmError: String?,
+    isLoading: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmChange: (String) -> Unit,
+    onRegister: () -> Unit,
+    onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
             modifier = Modifier
@@ -100,11 +141,11 @@ fun RegisterScreen(
 
             SmolifyTextField(
                 value = email,
-                onValueChange = { email = it; emailError = null },
+                onValueChange = onEmailChange,
                 label = "Email",
                 leadingIcon = Icons.Filled.Email,
                 errorMessage = emailError,
-                keyboardType = androidx.compose.ui.text.input.KeyboardType.Email,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
             )
 
@@ -112,7 +153,7 @@ fun RegisterScreen(
 
             PasswordTextField(
                 value = password,
-                onValueChange = { password = it; passwordError = null },
+                onValueChange = onPasswordChange,
                 label = "Password",
                 errorMessage = passwordError,
                 supportingText = if (passwordError == null) "At least 8 characters" else null,
@@ -123,25 +164,19 @@ fun RegisterScreen(
 
             PasswordTextField(
                 value = confirm,
-                onValueChange = { confirm = it; confirmError = null },
+                onValueChange = onConfirmChange,
                 label = "Confirm password",
                 errorMessage = confirmError,
                 imeAction = ImeAction.Done,
-                onImeAction = {
-                    attemptRegister(email, password, confirm, viewModel,
-                        { emailError = it }, { passwordError = it }, { confirmError = it })
-                },
+                onImeAction = onRegister,
             )
 
             Spacer(Modifier.height(24.dp))
 
             LoadingButton(
                 text = "Create account",
-                isLoading = state is UiState.Loading,
-                onClick = {
-                    attemptRegister(email, password, confirm, viewModel,
-                        { emailError = it }, { passwordError = it }, { confirmError = it })
-                },
+                isLoading = isLoading,
+                onClick = onRegister,
             )
 
             TextButton(
@@ -176,4 +211,67 @@ private fun attemptRegister(
         setConfirmError("Passwords don't match"); valid = false
     } else setConfirmError(null)
     if (valid) viewModel.register(email.trim(), password)
+}
+
+@Preview(showBackground = true, name = "Register – idle")
+@Composable
+private fun RegisterScreenIdlePreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "",
+            emailError = null,
+            password = "",
+            passwordError = null,
+            confirm = "",
+            confirmError = null,
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register – validation errors")
+@Composable
+private fun RegisterScreenErrorPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "bad",
+            emailError = "Enter a valid email address",
+            password = "123",
+            passwordError = "Password must be at least 8 characters",
+            confirm = "456",
+            confirmError = "Passwords don't match",
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Register – loading")
+@Composable
+private fun RegisterScreenLoadingPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        RegisterScreenContent(
+            email = "user@example.com",
+            emailError = null,
+            password = "password123",
+            passwordError = null,
+            confirm = "password123",
+            confirmError = null,
+            isLoading = true,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onConfirmChange = {},
+            onRegister = {},
+            onNavigateBack = {},
+        )
+    }
 }

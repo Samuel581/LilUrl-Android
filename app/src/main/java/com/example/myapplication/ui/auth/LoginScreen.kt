@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ import com.example.myapplication.ui.components.SmolifyTextField
 import com.example.myapplication.ui.components.LoadingButton
 import com.example.myapplication.ui.components.PasswordTextField
 import com.example.myapplication.ui.main.SmolifyLogo
+import com.example.myapplication.ui.theme.SmolifyTheme
 import com.example.myapplication.util.UiState
 import com.example.myapplication.util.Validation
 
@@ -73,6 +75,33 @@ fun LoginScreen(
         }
     }
 
+    LoginScreenContent(
+        email = email,
+        emailError = emailError,
+        password = password,
+        passwordError = passwordError,
+        isLoading = state is UiState.Loading,
+        snackbarHostState = snackbarHostState,
+        onEmailChange = { email = it; emailError = null },
+        onPasswordChange = { password = it; passwordError = null },
+        onLogin = { attemptLogin(email, password, viewModel, { emailError = it }, { passwordError = it }) },
+        onNavigateToRegister = onNavigateToRegister,
+    )
+}
+
+@Composable
+private fun LoginScreenContent(
+    email: String,
+    emailError: String?,
+    password: String,
+    passwordError: String?,
+    isLoading: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLogin: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+) {
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
             modifier = Modifier
@@ -108,7 +137,7 @@ fun LoginScreen(
 
             SmolifyTextField(
                 value = email,
-                onValueChange = { email = it; emailError = null },
+                onValueChange = onEmailChange,
                 label = "Email",
                 leadingIcon = Icons.Filled.Email,
                 errorMessage = emailError,
@@ -120,24 +149,20 @@ fun LoginScreen(
 
             PasswordTextField(
                 value = password,
-                onValueChange = { password = it; passwordError = null },
+                onValueChange = onPasswordChange,
                 label = "Password",
                 errorMessage = passwordError,
                 imeAction = ImeAction.Done,
-                onImeAction = {
-                    attemptLogin(email, password, viewModel, { emailError = it }, { passwordError = it })
-                },
-                enabled = state !is UiState.Loading,
+                onImeAction = onLogin,
+                enabled = !isLoading,
             )
 
             Spacer(Modifier.height(24.dp))
 
             LoadingButton(
                 text = "Log in",
-                isLoading = state is UiState.Loading,
-                onClick = {
-                    attemptLogin(email, password, viewModel, { emailError = it }, { passwordError = it })
-                },
+                isLoading = isLoading,
+                onClick = onLogin,
             )
 
             Spacer(Modifier.height(8.dp))
@@ -169,4 +194,58 @@ private fun attemptLogin(
         setPasswordError("Password is required"); valid = false
     } else setPasswordError(null)
     if (valid) viewModel.login(email.trim(), password)
+}
+
+@Preview(showBackground = true, name = "Login – idle")
+@Composable
+private fun LoginScreenIdlePreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        LoginScreenContent(
+            email = "",
+            emailError = null,
+            password = "",
+            passwordError = null,
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onLogin = {},
+            onNavigateToRegister = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login – validation errors")
+@Composable
+private fun LoginScreenErrorPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        LoginScreenContent(
+            email = "bad-email",
+            emailError = "Enter a valid email address",
+            password = "",
+            passwordError = "Password is required",
+            isLoading = false,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onLogin = {},
+            onNavigateToRegister = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login – loading")
+@Composable
+private fun LoginScreenLoadingPreview() {
+    SmolifyTheme(darkTheme = false, dynamicColor = false) {
+        LoginScreenContent(
+            email = "user@example.com",
+            emailError = null,
+            password = "password123",
+            passwordError = null,
+            isLoading = true,
+            onEmailChange = {},
+            onPasswordChange = {},
+            onLogin = {},
+            onNavigateToRegister = {},
+        )
+    }
 }
